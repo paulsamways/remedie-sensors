@@ -3,9 +3,9 @@
 #include <CAN.h>
 #include <arduino-timer.h>
 
-#define PIN_ENGINE_OIL_TEMPERATURE PIN_A1
+#define PIN_ENGINE_OIL_TEMPERATURE PIN_A3
 #define PIN_TRANSMISSION_FLUID_TEMPERATURE PIN_A2
-#define PIN_ENGINE_OIL_PRESSURE PIN_A3
+#define PIN_ENGINE_OIL_PRESSURE PIN_A4
 #define PIN_DRIVER_SWITCH_A 5
 #define PIN_DRIVER_SWITCH_B 6
 
@@ -66,7 +66,7 @@ double read_bosch_pst_f1_ntc(uint8_t pin, int r2) {
   const double B = 2.617143934e-4;
   const double C = 1.624978584e-7;
 
-  int value = analogRead(pin);
+  int value = 1024 - analogRead(pin);
 
   double v = (vref / 1024) * value;
   double r1 = ((vref * r2) / v) - r2;
