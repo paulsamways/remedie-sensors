@@ -86,14 +86,14 @@ double read_bosch_pst_f1_pressure(uint8_t pin) {
   return p;
 }
 
-void write_can_packet(int id, uint8_t v) {
-  if (CAN.available()) {
-    CAN.beginPacket(id);
-    CAN.write(v);
-    CAN.endPacket();
-  }
+void write_can_packet(int id, uint8_t v)
+{
+  CAN.beginPacket(id);
+  CAN.write(v);
+  CAN.endPacket();
 
-  if (Serial.availableForWrite()) {
+  if (Serial.availableForWrite())
+  {
     Serial.print(id);
     Serial.print(": ");
     Serial.println(v);
@@ -126,33 +126,41 @@ bool transmission_fluid_temperature(void *) {
   return true;
 }
 
-bool driver_id(void *) {
+bool driver_id(void *)
+{
   static uint8_t last_driver_id = 0;
 
   uint8_t result = 0;
 
-  if (!digitalRead(PIN_DRIVER_SWITCH_A)) {
+  if (!digitalRead(PIN_DRIVER_SWITCH_A))
+  {
     result |= 1 << 0;
   }
-  if (!digitalRead(PIN_DRIVER_SWITCH_B)) {
+  if (!digitalRead(PIN_DRIVER_SWITCH_B))
+  {
     result |= 1 << 1;
   }
 
-  if (last_driver_id != result) {
+  if (last_driver_id != result)
+  {
     last_driver_id = result;
-  } else {  
+  }
+  else
+  {
     write_can_packet(CAN_ID_DRIVER_ID, result);
   }
-  
+
   return true;
 }
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
 
   // start the CAN bus at 500 kbps
   uint8_t attempts = 0;
-  while (!CAN.begin(500E3) && attempts++ < 5) {
+  while (!CAN.begin(500E3) && attempts++ < 60)
+  {
     Serial.println("Starting CAN failed!");
     delay(1000);
   }
