@@ -85,6 +85,23 @@ double read_bosch_pst_f1_pressure(uint8_t pin) {
   double p = (145 / 3) * v;
   return p;
 }
+double read_sandwhich_plate_sensor(uint8_t pin, int r2) {
+  const double vref = 3.3;
+
+  const double A = 0.0006212298585387718;
+  const double B = 0.00025538988541031865;
+  const double C = -2.5963688685835344e-8;
+
+  int value = 1024 - analogRead(pin);
+
+  double v = (vref / 1024) * value;
+  double r1 = ((vref * r2) / v) - r2;
+
+  // Steinhart and Hart Equation
+  double logR1 = log(r1);
+  double k = 1 / (A + B * logR1 + C * logR1 * logR1 * logR1);
+  return k - 273.15;
+}
 
 void write_can_packet(int id, uint8_t v)
 {
@@ -105,7 +122,7 @@ void write_can_packet(int id, uint8_t v)
 bool engine_oil_temperature_pressure(void *) {
   const double R2 = 10000;
 
-  uint8_t c = round(read_bosch_pst_f1_ntc(PIN_ENGINE_OIL_TEMPERATURE, R2));
+  uint8_t c = round(read_sandwhich_plate_sensor(PIN_ENGINE_OIL_TEMPERATURE, R2));
 
   write_can_packet(CAN_ID_ENGINE_OIL_TEMPERATURE, c);
 
